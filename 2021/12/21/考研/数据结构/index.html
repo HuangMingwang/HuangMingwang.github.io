@@ -1,0 +1,266 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>数据结构 | MingwHuang's Blog</title><meta name="keywords" content="408,数据结构"><meta name="author" content="MingwHuang"><meta name="copyright" content="MingwHuang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="数据结构外部排序https:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV1gJ411u7JF?from&#x3D;search&amp;seid&#x3D;15373464297409923473&amp;spm_id_from&#x3D;333.337.0.0 多路归并排序外部排序指的是大文件的排序，即待排序的记录存储在外存储器上，待排序的文件无法一次装入内存，需要在内存和外部存储器之间进行多次数据交换，以达到排序">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构">
+<meta property="og:url" content="http://example.com/2021/12/21/%E8%80%83%E7%A0%94/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.html">
+<meta property="og:site_name" content="MingwHuang&#39;s Blog">
+<meta property="og:description" content="数据结构外部排序https:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV1gJ411u7JF?from&#x3D;search&amp;seid&#x3D;15373464297409923473&amp;spm_id_from&#x3D;333.337.0.0 多路归并排序外部排序指的是大文件的排序，即待排序的记录存储在外存储器上，待排序的文件无法一次装入内存，需要在内存和外部存储器之间进行多次数据交换，以达到排序">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2021-12-21T11:59:42.000Z">
+<meta property="article:modified_time" content="2022-02-22T13:55:23.954Z">
+<meta property="article:author" content="MingwHuang">
+<meta property="article:tag" content="408">
+<meta property="article:tag" content="数据结构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/12/21/%E8%80%83%E7%A0%94/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '数据结构',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-02-22 21:55:23'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.0.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">40</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">40</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">MingwHuang's Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">数据结构</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-12-21T11:59:42.000Z" title="发表于 2021-12-21 19:59:42">2021-12-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-02-22T13:55:23.954Z" title="更新于 2022-02-22 21:55:23">2022-02-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/408/">408</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="数据结构"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><h2 id="外部排序"><a href="#外部排序" class="headerlink" title="外部排序"></a>外部排序</h2><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1gJ411u7JF?from=search&amp;seid=15373464297409923473&amp;spm_id_from=333.337.0.0">https://www.bilibili.com/video/BV1gJ411u7JF?from=search&amp;seid=15373464297409923473&amp;spm_id_from=333.337.0.0</a></p>
+<h3 id="多路归并排序"><a href="#多路归并排序" class="headerlink" title="多路归并排序"></a>多路归并排序</h3><p>外部排序指的是大文件的排序，即待排序的记录存储在外存储器上，待排序的文件无法一次装入内存，需要在内存和外部存储器之间进行多次数据交换，以达到排序 整个文件的目的。外部排序最常用的算法是多路归并排序，即将原文件分解成多个能够一次性装入内存的部分，分别把每一部分调入内存完成排序。然后，对已经排序的子文件进行多路归并排序。</p>
+<p>缺点：每个数字需要两次io，于是就有了选择置换排序来减少io</p>
+<p>题目：</p>
+<p>若外部存储上有3110400个记录，做6路平衡归并排序，计算机内存工作区能容纳400个记录，则排序好所有记录，需要作几趟归并排序（ ）</p>
+<p>答案：5</p>
+<p>log(6,3110400&#x2F;400) &#x3D; 5</p>
+<h3 id="选择置换排序（用来构造初始归并段）"><a href="#选择置换排序（用来构造初始归并段）" class="headerlink" title="选择置换排序（用来构造初始归并段）"></a>选择置换排序（用来构造初始归并段）</h3><ul>
+<li>先将内存放满，然后取出一个最小的，接着从外存中放入一个，然后再取出一个最小的（可以考虑用堆排序）</li>
+<li>直到内存中最小的比外存中最大的小，然后就把内存中这个标记一下，继续取第二小的，直到内存中最大的比外存中最大的小，一趟排序结束，此时外存的为初始归并段，相比于多路归并排序来说，这个选归并段省去了多次io。</li>
+<li>接着和之前一样的步骤，最后会得到多个归并段</li>
+<li>然后使用多路归并排序来排序</li>
+</ul>
+<p>缺点：归并段的长度不一致， 怎么选择归并段会影响io次数，于是就有了最佳归并数来选择最佳的归并序列</p>
+<h3 id="最佳归并树"><a href="#最佳归并树" class="headerlink" title="最佳归并树"></a>最佳归并树</h3><p>类似于哈夫曼树</p>
+<h3 id="败者树"><a href="#败者树" class="headerlink" title="败者树"></a>败者树</h3><p>在内存中的数选出一个最小的（频繁执行），可以使用堆，但是败者树更好用。</p>
+<p>用堆的话每次调整之后不好记录这个数是舒服几个归并段的，而败者树不会。</p>
+<h2 id="Chaos"><a href="#Chaos" class="headerlink" title="Chaos"></a>Chaos</h2><h3 id="红黑树（RB-tree）比AVL树的优势在哪？"><a href="#红黑树（RB-tree）比AVL树的优势在哪？" class="headerlink" title="红黑树（RB-tree）比AVL树的优势在哪？"></a>红黑树（RB-tree）比AVL树的优势在哪？</h3><p>红黑树的特性:<br>（1）每个节点或者是黑色，或者是红色。<br>（2）根节点是黑色。<br>（3）每个叶子节点（NIL）是黑色。 [注意：这里叶子节点，是指为空(NIL或NULL)的叶子节点！]<br>（4）如果一个节点是红色的，则它的子节点必须是黑色的。<br>（5）从一个节点到该节点的子孙节点的所有路径上包含相同数目的黑节点。</p>
+<p>定理：<strong>一棵含有n个节点的红黑树的高度至多为2log(n+1)</strong>.</p>
+<p>首先红黑树是不符合AVL树的平衡条件的，即每个节点的左子树和右子树的高度最多差1的二叉查找树。但是提出了为节点增加颜色，红黑是用非严格的平衡来换取增删节点时候旋转次数的降低，任何不平衡都会在三次旋转之内解决，而AVL是严格平衡树，因此在增加或者删除节点的时候，根据不同情况，旋转的次数比红黑树要多。所以红黑树的插入效率更高！！！</p>
+<p>红黑树的查询性能略微逊色于AVL树，因为他比avl树会稍微不平衡最多多一层，也就是说红黑树的查询性能只比相同内容的avl树最多多一次比较，但是，红黑树在插入和删除上完爆avl树， avl树每次插入删除会进行大量的平衡度计算，而红黑树为了维持红黑性质所做的红黑变换和旋转的开销，相较于avl树为了维持平衡的开销要小得多 </p>
+<p>所以简单说，如果你的应用中，搜索的次数远远大于插入和删除，那么选择AVL，如果搜索，插入删除次数几乎差不多，应该选择RB。</p>
+<h3 id="面试之Trie树特点和应用场景"><a href="#面试之Trie树特点和应用场景" class="headerlink" title="面试之Trie树特点和应用场景"></a>面试之Trie树特点和应用场景</h3><p>优点：</p>
+<ol>
+<li><p>Trie进行对某个string查找的时间复杂度为O(m)，m为string中字符个数。相比较，BST（二叉搜索树）的时间复杂度是O(logN），在树不平衡的情况下，为O(N)；</p>
+</li>
+<li><p>利用字符串的公共前缀来减少查询时间，最大限度的减少无谓的字符串比较，查询效率比哈希树高。</p>
+</li>
+<li><p>Trie可以生成以字母顺序排序的键值对集合</p>
+</li>
+<li><p>自带排序功能</p>
+</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li><p>Trie在搜索效率上可能会比Hash慢。</p>
+</li>
+<li><p>有些键（key），例如浮点数，有很长的前序节点，可能会导致内存过大或者搜索效率下降。虽然bitwise trie可以处理这种情况，但需要针对特定的情境编写多余的代码。</p>
+</li>
+<li><p>在空间复杂度上，Trie的开销可能会多于Hashtable申请的内存。Trie的每一个节点可能会有多个孩子（例如每个节点最多可能有a-z 26个孩子），这个多层的Trie对内存开销很大。</p>
+</li>
+</ol>
+<p>Trie的应用场景</p>
+<ol>
+<li><p>保存一本字典，英文字典大约只有50,000个单词，并且Trie还演化出来一种叫做<a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Directed_acyclic_word_graph">Directed acyclic word graph</a>的东西，它将后缀一样的字符串也进行了压缩，所以空间利用率有了进一步提高。所以Trie在空间利用率上不会比Binary Search Tree差太多。</p>
+</li>
+<li><p>根据保存的字典，可以预测用户输入内容</p>
+</li>
+<li><p>断词和拼写查错软件也运用了Trie – spellings&#x2F;suggestions&#x2F;type-ahead-lookup&#x2F;auto-completion&#x2F;<br>这些应用场景都有一个特点，就是不是单独地查询一个词，而是获取以有一定字母顺序的一组字符串</p>
+</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">MingwHuang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2021/12/21/%E8%80%83%E7%A0%94/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">http://example.com/2021/12/21/%E8%80%83%E7%A0%94/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">MingwHuang's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/408/">408</a><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202172251674.png" target="_blank"><img class="post-qr-code-img" src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202172251674.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202172251973.png" target="_blank"><img class="post-qr-code-img" src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202172251973.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/12/21/Chaos/Design%20Doc%20Readability/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Design Doc Readability</div></div></a></div><div class="next-post pull-right"><a href="/2021/12/21/%E9%9D%A2%E8%AF%95/LeetCode/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Leetcode</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2021/10/20/%E8%80%83%E7%A0%94/2022%E5%B9%B4%E8%80%83%E7%A0%94408%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%AD%A6%E7%A7%91%E8%80%83%E8%AF%95%E5%A4%A7%E7%BA%B2/" title="2022年考研408计算机学科考试大纲"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-20</div><div class="title">2022年考研408计算机学科考试大纲</div></div></a></div><div><a href="/2021/09/21/%E8%80%83%E7%A0%94/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" title="操作系统"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-21</div><div class="title">操作系统</div></div></a></div><div><a href="/2021/09/21/%E8%80%83%E7%A0%94/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%9C%9F%E9%A2%98/" title="计算机网络真题"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-21</div><div class="title">计算机网络真题</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">MingwHuang</div><div class="author-info__description">朝花夕拾 聊以记之</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">40</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">40</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%96%E9%83%A8%E6%8E%92%E5%BA%8F"><span class="toc-number">1.1.</span> <span class="toc-text">外部排序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E8%B7%AF%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F"><span class="toc-number">1.1.1.</span> <span class="toc-text">多路归并排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E7%BD%AE%E6%8D%A2%E6%8E%92%E5%BA%8F%EF%BC%88%E7%94%A8%E6%9D%A5%E6%9E%84%E9%80%A0%E5%88%9D%E5%A7%8B%E5%BD%92%E5%B9%B6%E6%AE%B5%EF%BC%89"><span class="toc-number">1.1.2.</span> <span class="toc-text">选择置换排序（用来构造初始归并段）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E4%BD%B3%E5%BD%92%E5%B9%B6%E6%A0%91"><span class="toc-number">1.1.3.</span> <span class="toc-text">最佳归并树</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B4%A5%E8%80%85%E6%A0%91"><span class="toc-number">1.1.4.</span> <span class="toc-text">败者树</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Chaos"><span class="toc-number">1.2.</span> <span class="toc-text">Chaos</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%A2%E9%BB%91%E6%A0%91%EF%BC%88RB-tree%EF%BC%89%E6%AF%94AVL%E6%A0%91%E7%9A%84%E4%BC%98%E5%8A%BF%E5%9C%A8%E5%93%AA%EF%BC%9F"><span class="toc-number">1.2.1.</span> <span class="toc-text">红黑树（RB-tree）比AVL树的优势在哪？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%A2%E8%AF%95%E4%B9%8BTrie%E6%A0%91%E7%89%B9%E7%82%B9%E5%92%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.2.2.</span> <span class="toc-text">面试之Trie树特点和应用场景</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/02/22/Chaos/Chaos/" title="无题"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"/></a><div class="content"><a class="title" href="/2022/02/22/Chaos/Chaos/" title="无题">无题</a><time datetime="2022-02-22T13:55:23.925Z" title="发表于 2022-02-22 21:55:23">2022-02-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/02/20/Mac-%E6%B7%B1%E5%BA%A6%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/" title="Mac 深度使用技巧"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Mac 深度使用技巧"/></a><div class="content"><a class="title" href="/2022/02/20/Mac-%E6%B7%B1%E5%BA%A6%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/" title="Mac 深度使用技巧">Mac 深度使用技巧</a><time datetime="2022-02-20T14:38:23.000Z" title="发表于 2022-02-20 22:38:23">2022-02-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/02/15/%E9%9D%A2%E8%AF%95/MySQL/" title="MySQL"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MySQL"/></a><div class="content"><a class="title" href="/2022/02/15/%E9%9D%A2%E8%AF%95/MySQL/" title="MySQL">MySQL</a><time datetime="2022-02-15T10:46:58.000Z" title="发表于 2022-02-15 18:46:58">2022-02-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/01/14/Chaos/%E6%90%AD%E5%BB%BA%E6%A2%AF%E5%AD%90/" title="搭建梯子"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="搭建梯子"/></a><div class="content"><a class="title" href="/2022/01/14/Chaos/%E6%90%AD%E5%BB%BA%E6%A2%AF%E5%AD%90/" title="搭建梯子">搭建梯子</a><time datetime="2022-01-14T13:13:14.000Z" title="发表于 2022-01-14 21:13:14">2022-01-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/12/29/Chaos/%E9%98%BF%E9%87%8C%E4%BA%91+Typora+PicGo+Github+Hexo+Next%E4%B8%BB%E9%A2%98%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="阿里云+Typora+PicGo+Github+Hexo+Next主题搭建个人博客"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202172217123.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="阿里云+Typora+PicGo+Github+Hexo+Next主题搭建个人博客"/></a><div class="content"><a class="title" href="/2021/12/29/Chaos/%E9%98%BF%E9%87%8C%E4%BA%91+Typora+PicGo+Github+Hexo+Next%E4%B8%BB%E9%A2%98%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="阿里云+Typora+PicGo+Github+Hexo+Next主题搭建个人博客">阿里云+Typora+PicGo+Github+Hexo+Next主题搭建个人博客</a><time datetime="2021-12-29T03:34:23.000Z" title="发表于 2021-12-29 11:34:23">2021-12-29</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By MingwHuang</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a><span class="footer-separator">|</span><a href="https://beian.miit.gov.cn/" target="_blank">赣ICP备2022001353号-1</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">本地搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
