@@ -1,0 +1,265 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Raft | MingwHuang's Blog</title><meta name="keywords" content="Raft"><meta name="author" content="MingwHuang"><meta name="copyright" content="MingwHuang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Rafthttp:&#x2F;&#x2F;thesecretlivesofdata.com&#x2F;raft&#x2F; Raft概述Raft节点有3种角色：  Leader：处理客户端读写、复制Log给Follower等。 Candidate：竞选新的Leader(由Follower超时转换得来)。 Follower：不发送任何请求，完全被动响应Leader、Candidate的RPC。  Raft信息有3种RPC：  Reques">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Raft">
+<meta property="og:url" content="http://mingwzi.cn/2022/03/22/base/Raft/index.html">
+<meta property="og:site_name" content="MingwHuang&#39;s Blog">
+<meta property="og:description" content="Rafthttp:&#x2F;&#x2F;thesecretlivesofdata.com&#x2F;raft&#x2F; Raft概述Raft节点有3种角色：  Leader：处理客户端读写、复制Log给Follower等。 Candidate：竞选新的Leader(由Follower超时转换得来)。 Follower：不发送任何请求，完全被动响应Leader、Candidate的RPC。  Raft信息有3种RPC：  Reques">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272047554.jpg">
+<meta property="article:published_time" content="2022-03-22T07:13:56.000Z">
+<meta property="article:modified_time" content="2022-03-22T07:13:56.000Z">
+<meta property="article:author" content="MingwHuang">
+<meta property="article:tag" content="Raft">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272047554.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://mingwzi.cn/2022/03/22/base/Raft/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Raft',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-03-22 15:13:56'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.1.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272113875.JPG" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">48</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">45</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">17</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272047554.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">MingwHuang's Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Raft</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-03-22T07:13:56.000Z" title="发表于 2022-03-22 15:13:56">2022-03-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-03-22T07:13:56.000Z" title="更新于 2022-03-22 15:13:56">2022-03-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/base/">base</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Raft"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Raft"><a href="#Raft" class="headerlink" title="Raft"></a>Raft</h1><p><a target="_blank" rel="noopener" href="http://thesecretlivesofdata.com/raft/">http://thesecretlivesofdata.com/raft/</a></p>
+<h2 id="Raft概述"><a href="#Raft概述" class="headerlink" title="Raft概述"></a>Raft概述</h2><p>Raft节点有3种角色：</p>
+<ul>
+<li><strong>Leader</strong>：处理客户端读写、复制Log给Follower等。</li>
+<li><strong>Candidate</strong>：竞选新的Leader(由Follower超时转换得来)。</li>
+<li><strong>Follower</strong>：不发送任何请求，完全被动响应Leader、Candidate的RPC。</li>
+</ul>
+<p>Raft信息有3种RPC：</p>
+<ul>
+<li><p><strong>RequestVote RPC</strong>：由Candidate发出，用于发送投票请求。</p>
+</li>
+<li><p><strong>AppendEntries (Heartbeat) RPC</strong>：由Leader发出，用于Leader向Followers复制日志条目，也会用作Heartbeat（日志条目为空即为 Heartbeat）。</p>
+</li>
+<li><p><strong>InstallSnapshot RPC</strong>：由Leader发出，用于快照传输，虽然多数情况都是每个服务器独立创建快照，但是Leader有时候必须发送快照给一些落后太多的Follower，这通常发生在Leader已经丢弃了下一条要发给该Follower的日志条目(Log Compaction 时清除掉了的情况)。</p>
+</li>
+<li><p><strong>心跳超时</strong>：Leader周期性的向Follower发送心跳(0.5ms – 20ms)，如果Follower在<strong>选举超时</strong>时间内没有收到心跳，则触发选举。</p>
+</li>
+<li><p><strong>选举超时</strong>：如果存在两个或者多个节点选主，都没有拿到大多数节点的应答，需要重新选举，Raft引入随机的选举超时时间(150ms – 300ms)，避免选主活锁。</p>
+</li>
+</ul>
+<h2 id="强一致性（线性一致性）"><a href="#强一致性（线性一致性）" class="headerlink" title="强一致性（线性一致性）"></a>强一致性（线性一致性）</h2><p>所谓的强一致性（线性一致性）并不是指集群中所有节点在任一时刻的状态必须完全一致，而是指一个目标，即让一个分布式系统看起来只有一个数据副本，并且读写操作都是原子的，这样应用层就可以忽略系统底层多个数据副本间的同步问题。也就是说，可以将一个强一致性分布式系统当成一个整体，一旦某个客户端成功的执行了写操作，那么所有客户端都一定能读出刚刚写入的值。即使发生网络分区故障，或者少部分节点发生异常，整个集群依然能够像单机一样提供服务。</p>
+<h2 id="共识算法"><a href="#共识算法" class="headerlink" title="共识算法"></a>共识算法</h2><p>共识算法通常基于状态复制机（Replicated State Machine）模型，也就是所有节点从同一个 state 出发，经过同样的操作 log，最终达到一致的 state。</p>
+<p>共识算法是构建强一致性分布式系统的基石，Paxos 是共识算法的代表，而 Raft 则是其作者在博士期间研究 Paxos 时提出的一个变种，主要优点是容易理解、易于实现，甚至关键的部分都在论文中给出了伪代码实现。</p>
+<h2 id="TiKV"><a href="#TiKV" class="headerlink" title="TiKV"></a>TiKV</h2><p>TiKV 是一个分布式事务型的键值数据库，提供了满足 ACID 约束的分布式事务接口，并且通过 Raft 协议保证了多副本数据一致性以及高可用。TiKV 作为 TiDB 的存储层，为用户写入 TiDB 的数据提供了持久化以及读写服务，同时还存储了 TiDB 的统计信息数据。</p>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><h3 id="日志无限增长问题"><a href="#日志无限增长问题" class="headerlink" title="日志无限增长问题"></a>日志无限增长问题</h3><p>Raft 将操作包装成为了日志，集群每个节点都维护了一个不断增长的日志序列，状态机只有通过重放日志序列来得到。但由于这个日志序列可能会随着时间流逝不断增长，因此必须有一些办法来避免无休止的磁盘占用和过久的日志重放。这一部分叫<strong>日志压缩</strong>（<strong>Log compaction</strong>）。</p>
+<h3 id="集群成员变更问题"><a href="#集群成员变更问题" class="headerlink" title="集群成员变更问题"></a>集群成员变更问题</h3><p>一个 Raft 集群不太可能永远是固定几个节点，总有扩缩容的需求，或是节点宕机需要替换的时候。直接更换集群成员可能会导致严重的<strong>脑裂</strong>问题。Raft 给出了一种安全变更集群成员的方式。这一部分叫<strong>集群成员变更</strong>（<strong>Cluster membership change</strong>）。</p>
+<h2 id="在进行一致性复制的过程中-假如出现了异常情况，raft都是如何处理的呢？"><a href="#在进行一致性复制的过程中-假如出现了异常情况，raft都是如何处理的呢？" class="headerlink" title="在进行一致性复制的过程中,假如出现了异常情况，raft都是如何处理的呢？"></a>在进行一致性复制的过程中,假如出现了异常情况，raft都是如何处理的呢？</h2><p>1.数据到达 Leader 节点前，这个阶段 Leader 挂掉不影响一致性</p>
+<p>2.数据到达 Leader 节点，但未复制到 Follower 节点。这个阶段 Leader 挂掉，数据属于未提交状态，Client 不会收到 Ack 会认为超时失败可安全发起重试。</p>
+<p>3.数据到达 Leader 节点，成功复制到 Follower 所有节点，但 Follower 还未向 Leader 响应接收。这个阶段 Leader 挂掉，虽然数据在 Follower 节点处于未提交状态（Uncommitted），还是是保持一致的。重新选出 Leader 后可完成数据提交。</p>
+<p>4.数据到达 Leader 节点，成功复制到 Follower 的部分节点，但这部分 Follower 节点还未向 Leader 响应接收。这个阶段 Leader 挂掉，数据在 Follower 节点处于未提交状态（Uncommitted）且不一致。</p>
+<p>Raft 协议要求投票只能投给拥有最新数据的节点。所以拥有最新数据的节点会被选为 Leader，然后再强制同步数据到其他 Follower，保证数据不会丢失并最终一致。</p>
+<p>5.数据到达 Leader 节点，成功复制到 Follower 所有或多数节点，数据在 Leader 处于已提交状态，但在 Follower 处于未提交状态。</p>
+<p>这个阶段 Leader 挂掉，重新选出新的 Leader 后的处理流程和阶段 3 一样。</p>
+<p>6.数据到达 Leader 节点，成功复制到 Follower 所有或多数节点，数据在所有节点都处于已提交状态，但还未响应 Client。这个阶段Leader挂掉，集群内部数据其实已经是一致的，Client 重复重试基于幂等策略对一致性无影响。</p>
+<h2 id="脑裂问题"><a href="#脑裂问题" class="headerlink" title="脑裂问题"></a>脑裂问题</h2><p>当raft在集群中遇见网络分区的时候,集群就会因此而相隔开,在不同的网络分区里会因为无法接收到原来的leader发出的心跳而超时选主,这样就会造成多leader现象,见下图：在网络分区1和网络分区2中，出现了两个leaderA和D,假设此时要更新分区2的值,因为分区2无法得到集群中的大多数节点的ACK,会复制失败。而网络分区1会成功,因为分区1中的节点更多,leaderA能得到大多数回应</p>
+<p>当网络恢复的时候,集群不再是双分区,raft会有如下操作：</p>
+<ul>
+<li><p>leaderD发现自己的Term小于LeaderA,会自动下台(step down)成为follower,leaderA保持不变依旧是集群中的主leader角色</p>
+</li>
+<li><p>分区中的所有节点会回滚roll back自己的数据日志,并匹配新leader的log日志,然后实现同步提交更新自身的值。通知旧leaderA也会主动匹配主leader节点的最新值,并加入到follower中</p>
+</li>
+<li><p>最终集群达到整体一致，集群存在唯一leader（节点A）</p>
+</li>
+</ul>
+<p><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202203221611902.png" alt="img"></p>
+<p>只是分区1可以提供读写服务，分区二只能提供读服务，并且数据和分区1不一致。</p>
+<h3 id="极端情况"><a href="#极端情况" class="headerlink" title="极端情况"></a>极端情况</h3><p><img src="https://img-blog.csdnimg.cn/20191219100307323.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3p4eWx3ag==,size_16,color_FFFFFF,t_70" alt="img"></p>
+<p>脑裂问题出现后，即便网络恢复，集群也无法自我恢复，需要人工重启解决现有状态。</p>
+<h2 id="Zookeeper集群节点为什么要部署成奇数"><a href="#Zookeeper集群节点为什么要部署成奇数" class="headerlink" title="Zookeeper集群节点为什么要部署成奇数"></a>Zookeeper集群节点为什么要部署成奇数</h2><p>zookeeper 容错指的是：当宕掉几个 zookeeper 节点服务器之后，剩下的个数必须大于宕掉的个数，也就是剩下的节点服务数必须大于 n&#x2F;2，这样 zookeeper 集群才可以继续使用，无论奇偶数都可以选举 leader。例如5台 zookeeper 节点机器最多宕掉 2 台，还可以继续使用，因为剩下 3 台大于 5&#x2F;2。那么为什么最好为奇数个节点呢？是在以最大容错服务器个数的条件下，会节省资源。比如，最大容错为 2 的情况下，对应的zookeeper 服务数，奇数为5，而偶数为6，也就是6个zookeeper 服务的情况下最多能宕掉2个服务，所以从节约资源的角度看，没必要部署6（偶数）个 zookeeper 服务节点。</p>
+<p>zookeeper 集群有这样一个特性：集群中只要有过半的机器是正常工作的，那么整个集群对外就是可用的。也就是说如果有 2 个 zookeeper 节点，那么只要有1个zookeeper 节点死了，那么 zookeeper 服务就不能用了，因为1没有过半，所以2个 zookeeper 的死亡容忍度为0；同理，要是有3个 zookeeper，一个死了，还剩下2个正常的，过半了，所以3个 zookeeper 的容忍度为1；同理也可以多列举几个：2-&gt;0; 3-&gt;1; 4-&gt;1; 5-&gt;2; 6-&gt;2 就会发现一个规律，2n 和 2n-1 的容忍度是一样的，都是 n-1，所以为了更加高效，何必增加那一个不必要的 zookeeper 呢。</p>
+<p>根据以上可以得出结论：从资源节省的角度来考虑，zookeeper 集群的节点最好要部署成奇数个！</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">MingwHuang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://mingwzi.cn/2022/03/22/base/Raft/">http://mingwzi.cn/2022/03/22/base/Raft/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://mingwzi.cn" target="_blank">MingwHuang's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Raft/">Raft</a></div><div class="post_share"><div class="social-share" data-image="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272047554.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202172251674.png" target="_blank"><img class="post-qr-code-img" src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202172251674.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202172251973.png" target="_blank"><img class="post-qr-code-img" src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202172251973.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/03/22/base/%E9%AB%98%E5%8F%AF%E7%94%A8/"><img class="prev-cover" src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046990.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">高可用</div></div></a></div><div class="next-post pull-right"><a href="/2022/03/17/base/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"><img class="next-cover" src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046348.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">计算机网络</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272113875.JPG" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">MingwHuang</div><div class="author-info__description">朝花夕拾 聊以记之</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">48</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">45</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">17</div></a></div></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/HuangMingwang" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:1125385880@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">网站域名：http://mingwzi.cn</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Raft"><span class="toc-number">1.</span> <span class="toc-text">Raft</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Raft%E6%A6%82%E8%BF%B0"><span class="toc-number">1.1.</span> <span class="toc-text">Raft概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%BA%E4%B8%80%E8%87%B4%E6%80%A7%EF%BC%88%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E6%80%A7%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">强一致性（线性一致性）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95"><span class="toc-number">1.3.</span> <span class="toc-text">共识算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TiKV"><span class="toc-number">1.4.</span> <span class="toc-text">TiKV</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%BA%E7%82%B9"><span class="toc-number">1.5.</span> <span class="toc-text">缺点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E6%97%A0%E9%99%90%E5%A2%9E%E9%95%BF%E9%97%AE%E9%A2%98"><span class="toc-number">1.5.1.</span> <span class="toc-text">日志无限增长问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4%E6%88%90%E5%91%98%E5%8F%98%E6%9B%B4%E9%97%AE%E9%A2%98"><span class="toc-number">1.5.2.</span> <span class="toc-text">集群成员变更问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8%E8%BF%9B%E8%A1%8C%E4%B8%80%E8%87%B4%E6%80%A7%E5%A4%8D%E5%88%B6%E7%9A%84%E8%BF%87%E7%A8%8B%E4%B8%AD-%E5%81%87%E5%A6%82%E5%87%BA%E7%8E%B0%E4%BA%86%E5%BC%82%E5%B8%B8%E6%83%85%E5%86%B5%EF%BC%8Craft%E9%83%BD%E6%98%AF%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E7%9A%84%E5%91%A2%EF%BC%9F"><span class="toc-number">1.6.</span> <span class="toc-text">在进行一致性复制的过程中,假如出现了异常情况，raft都是如何处理的呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%84%91%E8%A3%82%E9%97%AE%E9%A2%98"><span class="toc-number">1.7.</span> <span class="toc-text">脑裂问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%81%E7%AB%AF%E6%83%85%E5%86%B5"><span class="toc-number">1.7.1.</span> <span class="toc-text">极端情况</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Zookeeper%E9%9B%86%E7%BE%A4%E8%8A%82%E7%82%B9%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E9%83%A8%E7%BD%B2%E6%88%90%E5%A5%87%E6%95%B0"><span class="toc-number">1.8.</span> <span class="toc-text">Zookeeper集群节点为什么要部署成奇数</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/22/base/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" title="读写分离&amp;分库分表"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046012.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="读写分离&amp;分库分表"/></a><div class="content"><a class="title" href="/2022/03/22/base/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" title="读写分离&amp;分库分表">读写分离&amp;分库分表</a><time datetime="2022-03-22T09:10:15.000Z" title="发表于 2022-03-22 17:10:15">2022-03-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/22/base/%E9%AB%98%E5%8F%AF%E7%94%A8/" title="高可用"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046990.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="高可用"/></a><div class="content"><a class="title" href="/2022/03/22/base/%E9%AB%98%E5%8F%AF%E7%94%A8/" title="高可用">高可用</a><time datetime="2022-03-22T08:47:25.000Z" title="发表于 2022-03-22 16:47:25">2022-03-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/22/base/Raft/" title="Raft"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272047554.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Raft"/></a><div class="content"><a class="title" href="/2022/03/22/base/Raft/" title="Raft">Raft</a><time datetime="2022-03-22T07:13:56.000Z" title="发表于 2022-03-22 15:13:56">2022-03-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/17/base/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" title="计算机网络"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046348.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="计算机网络"/></a><div class="content"><a class="title" href="/2022/03/17/base/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" title="计算机网络">计算机网络</a><time datetime="2022-03-17T12:46:58.000Z" title="发表于 2022-03-17 20:46:58">2022-03-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/17/base/JVM/" title="JVM"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046012.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="JVM"/></a><div class="content"><a class="title" href="/2022/03/17/base/JVM/" title="JVM">JVM</a><time datetime="2022-03-17T10:46:58.000Z" title="发表于 2022-03-17 18:46:58">2022-03-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By MingwHuang</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a><span class="footer-separator">|</span><a href="https://beian.miit.gov.cn/" target="_blank">赣ICP备2022001353号-1</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">本地搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
