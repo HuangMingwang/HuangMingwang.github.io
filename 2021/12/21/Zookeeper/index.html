@@ -1,0 +1,256 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Zookeeper | MingwHuang's Blog</title><meta name="keywords" content="大数据,Zookeeper"><meta name="author" content="MingwHuang"><meta name="copyright" content="MingwHuang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Zookeeper zookeeper&#x3D;文件系统+通知机制  一个leader多个follower组成的集群  集群只要半数以上节点存活，Zookeeper集群就能正常服务，适合安装奇数台服务器，偶数会浪费  全局数据一致:每个Server保存一份相同的数据副本，Client无论连接到哪个Server，数据都是一致的。   更新请求顺序执行，来自同一个Client的更新请求按其发送顺序依">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper">
+<meta property="og:url" content="http://mingwzi.cn/2021/12/21/Zookeeper/index.html">
+<meta property="og:site_name" content="MingwHuang&#39;s Blog">
+<meta property="og:description" content="Zookeeper zookeeper&#x3D;文件系统+通知机制  一个leader多个follower组成的集群  集群只要半数以上节点存活，Zookeeper集群就能正常服务，适合安装奇数台服务器，偶数会浪费  全局数据一致:每个Server保存一份相同的数据副本，Client无论连接到哪个Server，数据都是一致的。   更新请求顺序执行，来自同一个Client的更新请求按其发送顺序依">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046164.jpg">
+<meta property="article:published_time" content="2021-12-21T10:31:39.000Z">
+<meta property="article:modified_time" content="2022-02-22T13:55:23.949Z">
+<meta property="article:author" content="MingwHuang">
+<meta property="article:tag" content="大数据">
+<meta property="article:tag" content="Zookeeper">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046164.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://mingwzi.cn/2021/12/21/Zookeeper/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Zookeeper',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-02-22 21:55:23'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.1.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272113875.JPG" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">38</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">33</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046164.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">MingwHuang's Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Zookeeper</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-12-21T10:31:39.000Z" title="发表于 2021-12-21 18:31:39">2021-12-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-02-22T13:55:23.949Z" title="更新于 2022-02-22 21:55:23">2022-02-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Zookeeper"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h1><ul>
+<li><p>zookeeper&#x3D;文件系统+通知机制</p>
+</li>
+<li><p>一个leader多个follower组成的集群</p>
+</li>
+<li><p>集群只要半数以上节点存活，Zookeeper集群就能正常服务，适合安装奇数台服务器，偶数会浪费</p>
+</li>
+<li><p>全局数据一致:每个Server保存一份相同的数据副本，Client无论连接到哪个Server，数据都是一致的。 </p>
+</li>
+<li><p>更新请求顺序执行，来自同一个Client的更新请求按其发送顺序依次执行。 </p>
+</li>
+<li><p>数据更新原子性，一次数据更新要么成功，要么失败。 </p>
+</li>
+<li><p>实时性，在一定时间范围内，Client能读到最新数据。</p>
+</li>
+</ul>
+<p>每一个 ZNode 默认能够存储 1MB 的数据，每个 ZNode 都可以通过 其路径唯一标识。</p>
+<h2 id="Zookeeper本地安装"><a href="#Zookeeper本地安装" class="headerlink" title="Zookeeper本地安装"></a>Zookeeper本地安装</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br></pre></td><td class="code"><pre><span class="line">[hmw@hadoop100 ~]$ vi /etc/hostname</span><br><span class="line">hadoop100</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">关闭防火墙</span></span><br><span class="line">[hmw@hadoop100 ~]$ systemctl stop firewalld</span><br><span class="line"></span><br><span class="line">[hmw@hadoop100 ~]$ systemctl disable firewalld.service</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">创建huang用户</span></span><br><span class="line">[hmw@hadoop100 ~]$ useradd huang</span><br><span class="line">[hmw@hadoop100 ~]$ passwd huang</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">root和hmw密码hmw，huang密码yc</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">配置hmw用户具有root权限</span></span><br><span class="line">[hmw@hadoop100 ~]$ vi /etc/sudoers</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">在%wheel  ALL=(ALL) ALL这行下面添加一行</span> </span><br><span class="line">huang ALL=(ALL) NOPASSWD:ALL</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">这一行不要直接放到 root 行下面，因为所有用户都属于 wheel 组，你先配置了huang具有免密功能，但是程序执行到%wheel行时，该功能又被覆盖回需要密码。所以huang要放到%wheel这行下面。</span></span><br><span class="line"></span><br><span class="line">[hmw@hadoop100 ~]$ mkdir /opt/module</span><br><span class="line">[hmw@hadoop100 ~]$ mkdir /opt/software</span><br><span class="line">[hmw@hadoop100 ~]$ chown huang:huang /opt/module</span><br><span class="line">[hmw@hadoop100 ~]$ chown huang:huang /opt/software</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">查看这两个文件的所有者和所有属组</span></span><br><span class="line">[hmw@hadoop100 ~]$ cd /opt</span><br><span class="line">[hmw@hadoop100 ~]$ ll</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">卸载虚拟机自带的JDK</span> </span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">rpm-qa:查询所安装的所有rpm软件包</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">grep -i:忽略大小写</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">xargs -n1:表示每次只传递一个参数</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">rpm -e –nodeps:强制卸载软件</span></span><br><span class="line">[hmw@hadoop100 ~]$ rpm -qa | grep -i java | xargs -n1 rpm -e --nodeps</span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">重启</span></span><br><span class="line">[hmw@hadoop100 ~]$ reboot</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">修改hostname</span></span><br><span class="line">[huang@hadoop100 ~]$ vi /etc/hostname</span><br><span class="line">hadoop102</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">修改hosts</span></span><br><span class="line">[huang@hadoop100 ~]$ vi /etc/hosts</span><br><span class="line">10.211.55.13 hadoop102</span><br><span class="line">10.211.55.14 hadoop103</span><br><span class="line">10.211.55.15 hadoop104</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">配置免密登录</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">配置分发脚本</span></span><br><span class="line">[huang@hadoop102 ~]$ cd /home/huang/</span><br><span class="line">[huang@hadoop102 ~]$ mkdir bin</span><br><span class="line">[huang@hadoop102 ~]$ cd bin</span><br><span class="line">[huang@hadoop102 bin]$ vi xsync</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">1. 判断参数个数</span> </span><br><span class="line">if [ $# -lt 1 ] </span><br><span class="line">then</span><br><span class="line">		echo Not Enough Arguement!</span><br><span class="line">		exit; </span><br><span class="line">fi</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">2. 遍历集群所有机器</span></span><br><span class="line">for host in hadoop102 hadoop103 hadoop104 </span><br><span class="line">do</span><br><span class="line">	echo ==================== $host ==================== </span><br><span class="line"><span class="meta prompt_">	#</span><span class="language-bash">3. 遍历所有目录，挨个发送</span></span><br><span class="line">  for file in $@</span><br><span class="line">  do</span><br><span class="line"><span class="meta prompt_">		#</span><span class="language-bash">4. 判断文件是否存在</span> </span><br><span class="line">		if [ -e $file ]</span><br><span class="line">		then</span><br><span class="line">				#5. 获取父目录</span><br><span class="line">				pdir=$(cd -P $(dirname $file); pwd)</span><br><span class="line">				#6. 获取当前文件的名称 </span><br><span class="line">				fname=$(basename $file)</span><br><span class="line">				ssh $host &quot;mkdir -p $pdir&quot;</span><br><span class="line">				rsync -av $pdir/$fname $host:$pdir</span><br><span class="line">    else</span><br><span class="line">        echo $file does not exists!</span><br><span class="line">		fi </span><br><span class="line">	done</span><br><span class="line">done</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">修改脚本xsync具有执行权限</span></span><br><span class="line">[huang@hadoop102 bin]$ chmod +x xsync </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">将脚本复制到/bin，以便全局调用</span></span><br><span class="line">[huang@hadoop102 bin]$ sudo cp xsync /bin/</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">重启</span></span><br><span class="line">[huang@hadoop100 ~]$ reboot</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装jdk</span></span><br><span class="line">huangmingwang@huangmingwangdeMacBook-Pro ~ % scp /Users/huangmingwang/Downloads/jdk-8u212-linux-x64.tar.gz huang@hadoop102:/opt/software/</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">解压</span></span><br><span class="line">tar -zxvf jdk-8u212-linux-x64.tar.gz -C /opt/module/</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">配置JDK环境变量</span></span><br><span class="line">sudo vi /etc/profile.d/my_env.sh</span><br><span class="line">export JAVA_HOME=/opt/module/jdk1.8.0_212</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">如果用了sudo，那么xsync一定要给它的路径补全</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">同步环境变量配置（root所有者）</span></span><br><span class="line">sudo ./bin/xsync /etc/profile.d/my_env.sh </span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">/是指根目录：就是所有目录最顶层的目录。</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">./表示当前目录，./ 一般需要和其他文件夹或者文件结合使用，指代当前目录下的东西。</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">让新的环境变量生效</span></span><br><span class="line">source /etc/profile</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">安装Zookeeper</span></span><br><span class="line">tar -zxvf apache-zookeeper-3.5.7-bin.tar.gz -C /opt/module/</span><br><span class="line">mv apache-zookeeper-3.5.7-bin/ zookeeper-3.5.7</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/tmp 目录存的是临时数据，一个月可能会被删除</span></span><br><span class="line">mkdir zkData</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">在/opt/module/zookeeper-3.5.7/zkData 目录下创建一个 myid 的文件</span></span><br><span class="line">vi myid</span><br><span class="line">2</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">同步，并分别在 hadoop103、hadoop104 上修改 myid 文件中内容为 3、4</span></span><br><span class="line">xsync zookeeper-3.5.7</span><br><span class="line"></span><br><span class="line">mv zoo_sample.cfg zoo.cfg</span><br><span class="line">vim zoo.cfg</span><br><span class="line">dataDir=/opt/module/zookeeper-3.5.7/zkData</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">######################cluster########################## server.2=hadoop102:2888:3888</span></span></span><br><span class="line">server.3=hadoop103:2888:3888</span><br><span class="line">server.4=hadoop104:2888:3888</span><br><span class="line"></span><br><span class="line">xsync zoo.cfg</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">启动（3台都要启动）</span></span><br><span class="line">bin/zkServer.sh start</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">编写启动停止脚本</span></span><br><span class="line">vim zk.sh</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line">case $1 in</span><br><span class="line">&quot;start&quot;)&#123;</span><br><span class="line">	for i in hadoop102 hadoop103 hadoop104 </span><br><span class="line">	do</span><br><span class="line">		echo ---------- zookeeper $i 启动 ------------</span><br><span class="line">		ssh $i &quot;/opt/module/zookeeper-3.5.7/bin/zkServer.sh start&quot;</span><br><span class="line">	done </span><br><span class="line">&#125;</span><br><span class="line">;;</span><br><span class="line">&quot;stop&quot;)&#123;</span><br><span class="line">	for i in hadoop102 hadoop103 hadoop104 </span><br><span class="line">	do</span><br><span class="line">		echo ---------- zookeeper $i 停止 ------------</span><br><span class="line">		ssh $i &quot;/opt/module/zookeeper-3.5.7/bin/zkServer.sh stop&quot;</span><br><span class="line">	done </span><br><span class="line">&#125;</span><br><span class="line">;;</span><br><span class="line">&quot;status&quot;)&#123;</span><br><span class="line">	for i in hadoop102 hadoop103 hadoop104 </span><br><span class="line">	do</span><br><span class="line">		echo ---------- zookeeper $i 状态 ------------</span><br><span class="line">		ssh $i &quot;/opt/module/zookeeper-3.5.7/bin/zkServer.sh status&quot;</span><br><span class="line">	done </span><br><span class="line">&#125;</span><br><span class="line">;;</span><br><span class="line">esac</span><br><span class="line"></span><br><span class="line">chmod u+x zk.sh</span><br><span class="line">zk.sh start</span><br><span class="line">zk.sh stop</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">jpsall脚本</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="选举机制"><a href="#选举机制" class="headerlink" title="选举机制"></a>选举机制</h2><p>应答数超过半数就是回复成功</p>
+<h2 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h2><p>CountDownLatch 应用场景</p>
+<p>典型的应用场景就是当一个服务启动时，同时会加载很多组件和服务，这时候主线程会等待组件和服务的加载。当所有的组件和服务都加载完毕后，主线程和其他线程在一起完成某个任务。</p>
+<p>CountDownLatch 还可以实现学生一起比赛跑步的程序，CountDownLatch 初始化为学生数量的线程，鸣枪后，每个学生就是一条线程，来完成各自的任务，当第一个学生跑完全程后，CountDownLatch 就会减一，直到所有的学生完成后，CountDownLatch 会变为 0 ，接下来再一起宣布跑步成绩。</p>
+<h4 id="Curator分布式锁框架"><a href="#Curator分布式锁框架" class="headerlink" title="Curator分布式锁框架"></a>Curator分布式锁框架</h4><h2 id="Paxos算法"><a href="#Paxos算法" class="headerlink" title="Paxos算法"></a>Paxos算法</h2><h2 id="Zab算法"><a href="#Zab算法" class="headerlink" title="Zab算法"></a>Zab算法</h2><ul>
+<li><strong>序列化</strong>：把Java对象转换为字节序列。</li>
+<li><strong>反序列化</strong>：把字节序列恢复为原先的Java对象。</li>
+</ul>
+<p>会存在本地磁盘</p>
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>启动zookeeper时，感觉一切正常，但是通过zkServer.sh status查看状态时，发现报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error contacting service. It is probably not running.</span><br></pre></td></tr></table></figure>
+
+<p>通过查看 zk&#x2F;logs下的文件，发现有如下报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ERROR [main:QuorumPeerMain@86] - Invalid config, exiting abnormally</span><br><span class="line">org.apache.zookeeper.server.quorum.QuorumPeerConfig$ConfigException: Address unresolved: node01:3888 </span><br><span class="line">	at org.apache.zookeeper.server.quorum.QuorumPeer$QuorumServer.&lt;init&gt;(QuorumPeer.java:242)</span><br><span class="line">	at org.apache.zookeeper.server.quorum.flexible.QuorumMaj.&lt;init&gt;(QuorumMaj.java:89)</span><br></pre></td></tr></table></figure>
+
+<h2 id="错误原因"><a href="#错误原因" class="headerlink" title="错误原因"></a>错误原因</h2><p>在配置zoo.cfg文件时候，端口号后面还有空格。因为是从其他地方复制的，所以不容易发现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">server.0=spark1:2888:3888(此处有空格)</span><br><span class="line">server.1=spark2:2888:3888</span><br><span class="line">server.2=spark3:2888:3888</span><br></pre></td></tr></table></figure>
+
+<h2 id="解决办法："><a href="#解决办法：" class="headerlink" title="解决办法："></a>解决办法：</h2><p>删掉端口号后面的空格即可</p>
+<p>有问题一定要先看日志</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">MingwHuang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://mingwzi.cn/2021/12/21/Zookeeper/">http://mingwzi.cn/2021/12/21/Zookeeper/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://mingwzi.cn" target="_blank">MingwHuang's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a><a class="post-meta__tags" href="/tags/Zookeeper/">Zookeeper</a></div><div class="post_share"><div class="social-share" data-image="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046164.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202172251674.png" target="_blank"><img class="post-qr-code-img" src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202172251674.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202172251973.png" target="_blank"><img class="post-qr-code-img" src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202172251973.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/12/21/Java/"><img class="prev-cover" src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046348.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Java</div></div></a></div><div class="next-post pull-right"><a href="/2021/12/21/Kafka/"><img class="next-cover" src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272047554.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Kafka</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2021/12/21/Kafka/" title="Kafka"><img class="cover" src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272047554.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-21</div><div class="title">Kafka</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272113875.JPG" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">MingwHuang</div><div class="author-info__description">朝花夕拾 聊以记之</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">38</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">33</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/HuangMingwang" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:1125385880@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">网站域名：http://mingwzi.cn</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Zookeeper"><span class="toc-number">1.</span> <span class="toc-text">Zookeeper</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Zookeeper%E6%9C%AC%E5%9C%B0%E5%AE%89%E8%A3%85"><span class="toc-number">1.1.</span> <span class="toc-text">Zookeeper本地安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6"><span class="toc-number">1.2.</span> <span class="toc-text">选举机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="toc-number">1.3.</span> <span class="toc-text">分布式锁</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Curator%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%A1%86%E6%9E%B6"><span class="toc-number">1.3.0.1.</span> <span class="toc-text">Curator分布式锁框架</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Paxos%E7%AE%97%E6%B3%95"><span class="toc-number">1.4.</span> <span class="toc-text">Paxos算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Zab%E7%AE%97%E6%B3%95"><span class="toc-number">1.5.</span> <span class="toc-text">Zab算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-number">1.6.</span> <span class="toc-text">问题描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E5%8E%9F%E5%9B%A0"><span class="toc-number">1.7.</span> <span class="toc-text">错误原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%EF%BC%9A"><span class="toc-number">1.8.</span> <span class="toc-text">解决办法：</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/04/30/%E5%81%A5%E8%BA%AB/" title="无题"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046348.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"/></a><div class="content"><a class="title" href="/2022/04/30/%E5%81%A5%E8%BA%AB/" title="无题">无题</a><time datetime="2022-04-30T09:00:59.324Z" title="发表于 2022-04-30 17:00:59">2022-04-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/04/30/%E8%80%83%E7%A0%94/" title="无题"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272047554.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"/></a><div class="content"><a class="title" href="/2022/04/30/%E8%80%83%E7%A0%94/" title="无题">无题</a><time datetime="2022-04-30T08:47:28.217Z" title="发表于 2022-04-30 16:47:28">2022-04-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/04/30/%E9%97%B2%E9%B1%BCdk/" title="无题"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046990.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"/></a><div class="content"><a class="title" href="/2022/04/30/%E9%97%B2%E9%B1%BCdk/" title="无题">无题</a><time datetime="2022-04-30T08:45:41.164Z" title="发表于 2022-04-30 16:45:41">2022-04-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/04/30/%E4%B9%A6%E5%8D%95/" title="无题"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046348.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"/></a><div class="content"><a class="title" href="/2022/04/30/%E4%B9%A6%E5%8D%95/" title="无题">无题</a><time datetime="2022-04-30T08:44:19.385Z" title="发表于 2022-04-30 16:44:19">2022-04-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/04/30/%E8%8B%B1%E8%AF%AD/" title="无题"><img src="https://typora-mingwhuang.oss-cn-shenzhen.aliyuncs.com/typora/202202272046164.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无题"/></a><div class="content"><a class="title" href="/2022/04/30/%E8%8B%B1%E8%AF%AD/" title="无题">无题</a><time datetime="2022-04-30T08:43:17.270Z" title="发表于 2022-04-30 16:43:17">2022-04-30</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By MingwHuang</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a><span class="footer-separator">|</span><a href="https://beian.miit.gov.cn/" target="_blank">赣ICP备2022001353号-1</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">本地搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
